@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import StackIcon from "tech-stack-icons";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -13,6 +14,29 @@ export default function Home() {
   const decomposeLabelRef = useRef<HTMLDivElement>(null);
   const reassembleFlashRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
+
+  const testimonials = [
+    {
+      quote: "The engineering rigor Mirai Labs brought to our core cloud infrastructure allowed us to scale from thousands to millions of active users without a single minute of downtime.",
+      author: "Sarah Jenkins",
+      role: "CTO",
+      company: "Velo Financial"
+    },
+    {
+      quote: "Mirai Labs doesn’t just write code. They architected our AI data ingestion pipeline with absolute precision. Their team operates at a level we haven't seen elsewhere.",
+      author: "Marcus Thorne",
+      role: "Head of Engineering",
+      company: "Aether Core"
+    },
+    {
+      quote: "Their custom software systems transformed our operations. The codebase is clean, the documentation is impeccable, and their support is unmatched.",
+      author: "Elena Rostova",
+      role: "Director of Product",
+      company: "Zenith Logix"
+    }
+  ];
+
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     // ─── CURSOR ───────────────────────────────────────────────────────────
@@ -316,7 +340,7 @@ export default function Home() {
           revealObs.unobserve(e.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.01, rootMargin: '0px 0px -10px 0px' });
 
     reveals.forEach(el => revealObs.observe(el));
 
@@ -430,6 +454,78 @@ export default function Home() {
           <div className="service-item reveal"><span className="service-num">03</span><span className="service-name">Mobile Development</span><span className="service-arrow">→</span></div>
           <div className="service-item reveal"><span className="service-num">04</span><span className="service-name">Artificial Intelligence & Automation</span><span className="service-arrow">→</span></div>
           <div className="service-item reveal"><span className="service-num">05</span><span className="service-name">Cloud Infrastructure & DevOps</span><span className="service-arrow">→</span></div>
+        </section>
+
+        {/* TECH STACK MARQUEE */}
+        <section className="tech-stack reveal">
+          <div className="section-label">Our Tech Stack</div>
+          <div className="marquee-container">
+            <div className="marquee-row marquee-left">
+              <div className="marquee-track">
+                {[...Array(2)].map((_, trackIdx) => (
+                  <div key={`track-${trackIdx}`} className="flex gap-[64px] flex-nowrap shrink-0">
+                    <div className="marquee-item"><StackIcon name="angular" /></div>
+                    <div className="marquee-item"><StackIcon name="react" /></div>
+                    <div className="marquee-item"><StackIcon name="aws" /></div>
+                    <div className="marquee-item"><StackIcon name="docker" /></div>
+                    <div className="marquee-item"><StackIcon name="kubernetes" /></div>
+                    <div className="marquee-item"><StackIcon name="redis" /></div>
+                    <div className="marquee-item"><StackIcon name="graphql" /></div>
+                    <div className="marquee-item"><StackIcon name="go" /></div>
+                    <div className="marquee-item"><StackIcon name="django" /></div>
+                    <div className="marquee-item"><StackIcon name="nextjs" /></div>
+                    <div className="marquee-item"><StackIcon name="typescript" /></div>
+                    <div className="marquee-item"><StackIcon name="nodejs" /></div>
+                    <div className="marquee-item"><StackIcon name="python" /></div>
+                    <div className="marquee-item"><StackIcon name="mongodb" /></div>
+                    <div className="marquee-item"><StackIcon name="postgresql" /></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* TESTIMONIALS CAROUSEL */}
+        <section className="reveal py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] flex flex-col">
+          <div className="section-label">Client Feedback</div>
+          <div className="max-w-[800px] mx-auto w-full flex flex-col gap-9 bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-6 md:p-[50px_60px] relative shadow-2xl" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+            <div className="flex flex-col gap-6">
+              <p className="italic font-light leading-[1.45] text-[#cccccc] text-center text-[20px] md:text-[26px]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                &ldquo;{testimonials[activeIndex].quote}&rdquo;
+              </p>
+              <div className="flex items-center justify-center gap-2 text-[11px] tracking-[0.08em] uppercase text-[#555]">
+                <span className="text-white font-medium">{testimonials[activeIndex].author}</span>
+                <span className="text-[rgba(255,255,255,0.15)]">/</span>
+                <span className="text-[#777]">{testimonials[activeIndex].role}, {testimonials[activeIndex].company}</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.05)] pt-6">
+              <button
+                onClick={() => setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+                className="bg-transparent border border-[rgba(255,255,255,0.15)] text-[#bdbdbd] w-[38px] h-[38px] rounded-full flex items-center justify-center cursor-none text-[14px] transition-all duration-300 hover:bg-white hover:text-black hover:border-white"
+                aria-label="Previous testimonial"
+              >
+                ←
+              </button>
+              <div className="flex gap-2.5">
+                {testimonials.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`w-1.5 h-1.5 rounded-full border-none p-0 cursor-none transition-all duration-300 ease-in-out ${idx === activeIndex ? 'bg-white scale-125' : 'bg-[rgba(255,255,255,0.25)]'}`}
+                    onClick={() => setActiveIndex(idx)}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() => setActiveIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+                className="bg-transparent border border-[rgba(255,255,255,0.15)] text-[#bdbdbd] w-[38px] h-[38px] rounded-full flex items-center justify-center cursor-none text-[14px] transition-all duration-300 hover:bg-white hover:text-black hover:border-white"
+                aria-label="Next testimonial"
+              >
+                →
+              </button>
+            </div>
+          </div>
         </section>
 
         <footer>
