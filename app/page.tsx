@@ -69,7 +69,7 @@ export default function Home() {
     animRing();
 
     // Hover effects
-    const hoverElements = document.querySelectorAll('a, button, .service-item');
+    const hoverElements = document.querySelectorAll('a, button, .service-item, [class*="col-span"]');
     const onMouseEnter = () => {
       if (cursor && ring) {
         cursor.style.width = '14px';
@@ -381,14 +381,14 @@ export default function Home() {
 
       {/* NAV */}
       <nav id="navbar" ref={navbarRef}>
-        <a href="#" className="nav-logo">Mirai <span>Labs</span></a>
+        <a href="/" className="nav-logo">Mirai <span>Labs</span></a>
         <ul className="nav-links">
-          <li><a href="#">Work</a></li>
-          <li><a href="#">Services</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/news">News</a></li>
+          <li><a href="/careers">Careers</a></li>
+          <li><a href="/contact">Contact</a></li>
         </ul>
-        <a href="#" className="nav-cta">Start a Project</a>
+        <a href="/contact" className="nav-cta">Start a Project</a>
       </nav>
 
       {/* HERO — scroll container */}
@@ -647,6 +647,64 @@ export default function Home() {
           </div>
         </section>
 
+        {/* WORKSPACES COLLAGE */}
+        <section className="py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] flex flex-col gap-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            <div className="flex flex-col gap-4">
+              <div className="section-label">Our Workspaces</div>
+              <h2 className="font-serif text-3xl md:text-5xl font-light text-white leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                Where precision is <em>engineered.</em>
+              </h2>
+            </div>
+            <p className="text-sm text-[#777] max-w-sm leading-relaxed">
+              Our engineering labs and innovation hubs are designed to inspire focus, rigorous prototyping, and cross-border collaboration.
+            </p>
+          </div>
+
+          {/* Asymmetric Collage Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 auto-rows-[220px] md:auto-rows-[320px]">
+            {/* 1. Colombo Hub */}
+            <div className="md:col-span-8 md:row-span-1 relative rounded-[32px] overflow-hidden group border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.01)] hover:border-[rgba(255,255,255,0.2)] transition-all duration-500">
+              <img src="/colombo.jpg" alt="Colombo HQ" className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700 ease-out" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-85 pointer-events-none"></div>
+              <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 flex flex-col gap-1.5 z-10">
+                <span className="text-[10px] uppercase tracking-widest text-[#555] group-hover:text-white transition-colors duration-300">Engineering Headquarters</span>
+                <h3 className="font-serif text-2xl md:text-3xl text-white font-light" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Colombo R&D</h3>
+              </div>
+            </div>
+
+            {/* 2. Tallinn Node */}
+            <div className="md:col-span-4 md:row-span-1 relative rounded-[32px] overflow-hidden group border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.01)] hover:border-[rgba(255,255,255,0.2)] transition-all duration-500">
+              <img src="/tallin.jpg" alt="Tallinn Office" className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700 ease-out" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-85 pointer-events-none"></div>
+              <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 flex flex-col gap-1.5 z-10">
+                <span className="text-[10px] uppercase tracking-widest text-[#555] group-hover:text-white transition-colors duration-300">Distributed Identity Node</span>
+                <h3 className="font-serif text-2xl md:text-3xl text-white font-light" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Tallinn Lab</h3>
+              </div>
+            </div>
+
+            {/* 3. Japan Lab */}
+            <div className="md:col-span-6 md:row-span-1 relative rounded-[32px] overflow-hidden group border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.01)] hover:border-[rgba(255,255,255,0.2)] transition-all duration-500">
+              <img src="/japan.jpg" alt="Japan Office" className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700 ease-out" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-85 pointer-events-none"></div>
+              <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 flex flex-col gap-1.5 z-10">
+                <span className="text-[10px] uppercase tracking-widest text-[#555] group-hover:text-white transition-colors duration-300">Automation & Integration</span>
+                <h3 className="font-serif text-2xl md:text-3xl text-white font-light" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Tokyo Space</h3>
+              </div>
+            </div>
+
+            {/* 4. Innovation Hub */}
+            <div className="md:col-span-6 md:row-span-1 relative rounded-[32px] overflow-hidden group border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.01)] hover:border-[rgba(255,255,255,0.2)] transition-all duration-500">
+              <img src="/innovation-hub.jpg" alt="Innovation Hub" className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700 ease-out" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-85 pointer-events-none"></div>
+              <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 flex flex-col gap-1.5 z-10">
+                <span className="text-[10px] uppercase tracking-widest text-[#555] group-hover:text-white transition-colors duration-300">Design & Prototyping</span>
+                <h3 className="font-serif text-2xl md:text-3xl text-white font-light" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Innovation Hub</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* TESTIMONIALS CAROUSEL */}
         <section className="py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] flex flex-col">
           <div className="section-label">Client Feedback</div>
@@ -775,10 +833,10 @@ export default function Home() {
               <div className="flex flex-col gap-6">
                 <h4 className="text-xs font-semibold uppercase tracking-widest text-[#555]">Navigation</h4>
                 <ul className="flex flex-col gap-3 list-none p-0 m-0">
-                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Work</a></li>
-                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Services</a></li>
-                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">About</a></li>
-                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Contact</a></li>
+                  <li><a href="/" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Work</a></li>
+                  <li><a href="/about" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Services</a></li>
+                  <li><a href="/about" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">About</a></li>
+                  <li><a href="/contact" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Contact</a></li>
                 </ul>
               </div>
 
@@ -786,10 +844,10 @@ export default function Home() {
               <div className="flex flex-col gap-6">
                 <h4 className="text-xs font-semibold uppercase tracking-widest text-[#555]">Services</h4>
                 <ul className="flex flex-col gap-3 list-none p-0 m-0">
-                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Software Development</a></li>
-                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Web Platforms</a></li>
-                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Mobile Development</a></li>
-                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">AI & DevOps</a></li>
+                  <li><a href="/about" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Software Development</a></li>
+                  <li><a href="/about" className="text-sm text-[#777] hover:text-white transition-colors duration-300 no-underline">Web Platforms</a></li>
+                  <li><a href="/about" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Mobile Development</a></li>
+                  <li><a href="/about" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">AI & DevOps</a></li>
                 </ul>
               </div>
 
