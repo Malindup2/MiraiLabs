@@ -1,65 +1,434 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 export default function Home() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const navbarRef = useRef<HTMLElement>(null);
+  const heroContainerRef = useRef<HTMLDivElement>(null);
+  const heroContentRef = useRef<HTMLDivElement>(null);
+  const decomposeLabelRef = useRef<HTMLDivElement>(null);
+  const reassembleFlashRef = useRef<HTMLDivElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // ─── CURSOR ───────────────────────────────────────────────────────────
+    const cursor = cursorRef.current;
+    const ring = ringRef.current;
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    let ringAnimFrameId: number;
+
+    const onMouseMove = (e: MouseEvent) => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (cursor) {
+        cursor.style.left = mx + 'px';
+        cursor.style.top = my + 'px';
+      }
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+
+    const animRing = () => {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      if (ring) {
+        ring.style.left = rx + 'px';
+        ring.style.top = ry + 'px';
+      }
+      ringAnimFrameId = requestAnimationFrame(animRing);
+    };
+    animRing();
+
+    // Hover effects
+    const hoverElements = document.querySelectorAll('a, button, .service-item');
+    const onMouseEnter = () => {
+      if (cursor && ring) {
+        cursor.style.width = '14px';
+        cursor.style.height = '14px';
+        ring.style.width = '44px';
+        ring.style.height = '44px';
+      }
+    };
+    const onMouseLeave = () => {
+      if (cursor && ring) {
+        cursor.style.width = '6px';
+        cursor.style.height = '6px';
+        ring.style.width = '28px';
+        ring.style.height = '28px';
+      }
+    };
+
+    hoverElements.forEach(el => {
+      el.addEventListener('mouseenter', onMouseEnter);
+      el.addEventListener('mouseleave', onMouseLeave);
+    });
+
+    // ─── SCROLL STATE & NAV ───────────────────────────────────────────────
+    const navbar = navbarRef.current;
+    const heroContainer = heroContainerRef.current;
+    const progressBar = progressBarRef.current;
+
+    let scrollProgress = 0; // 0→1 across the hero scroll zone
+
+    const onScroll = () => {
+      if (heroContainer) {
+        const rect = heroContainer.getBoundingClientRect();
+        const total = heroContainer.offsetHeight - window.innerHeight;
+        const scrolled = -rect.top;
+        scrollProgress = Math.max(0, Math.min(1, scrolled / total));
+      }
+
+      // nav
+      if (navbar) {
+        if (window.scrollY > 60) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      }
+
+      // progress bar
+      if (progressBar) {
+        const totalPage = document.body.scrollHeight - window.innerHeight;
+        progressBar.style.width = (window.scrollY / totalPage * 100) + '%';
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // Trigger once on mount
+    onScroll();
+
+    // ─── THREE.JS SETUP ───────────────────────────────────────────────────
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1000);
+    camera.position.set(0, 0, 6);
+
+    // ─── GEOMETRY: Icosahedron + wireframe ─────────────────────────────
+    const icoGeo = new THREE.IcosahedronGeometry(1.8, 1);
+    const edges = new THREE.EdgesGeometry(icoGeo);
+
+    // wireframe lines — the "form"
+    const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 });
+    const wireframe = new THREE.LineSegments(edges, wireMat);
+    scene.add(wireframe);
+
+    // inner solid (subtle)
+    const solidMat = new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.6, side: THREE.FrontSide });
+    const solid = new THREE.Mesh(icoGeo, solidMat);
+    scene.add(solid);
+
+    // ─── PARTICLES: face centers that explode on scroll ────────────────
+    const ICO_DETAIL = 1;
+    const baseFaceGeo = new THREE.IcosahedronGeometry(1.8, ICO_DETAIL);
+    const posAttr = baseFaceGeo.getAttribute('position') as THREE.BufferAttribute;
+
+    // collect unique face centers
+    const faceCenters: THREE.Vector3[] = [];
+    for (let i = 0; i < posAttr.count; i += 3) {
+      const ax = posAttr.getX(i), ay = posAttr.getY(i), az = posAttr.getZ(i);
+      const bx = posAttr.getX(i+1), by = posAttr.getY(i+1), bz = posAttr.getZ(i+1);
+      const cx = posAttr.getX(i+2), cy = posAttr.getY(i+2), cz = posAttr.getZ(i+2);
+      faceCenters.push(new THREE.Vector3((ax+bx+cx)/3, (ay+by+cy)/3, (az+bz+cz)/3));
+    }
+
+    // explode particles — small triangle-like marks at face centers
+    const PARTICLE_COUNT = faceCenters.length;
+    const particleGeo = new THREE.BufferGeometry();
+    const pPositions = new Float32Array(PARTICLE_COUNT * 3);
+    const pTargets: THREE.Vector3[] = []; // exploded targets
+    const pOrigins: THREE.Vector3[] = []; // original positions
+
+    faceCenters.forEach((fc, i) => {
+      pPositions[i*3]   = fc.x;
+      pPositions[i*3+1] = fc.y;
+      pPositions[i*3+2] = fc.z;
+      pOrigins.push(fc.clone());
+      // explode outward + slight random drift
+      const dir = fc.clone().normalize();
+      const spread = 4.5 + Math.random() * 3;
+      const drift = new THREE.Vector3((Math.random()-.5)*.8, (Math.random()-.5)*.8, (Math.random()-.5)*.8);
+      pTargets.push(dir.multiplyScalar(spread).add(drift));
+    });
+
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+    const particleMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0 });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+
+    // additional small dot cloud around the structure
+    const CLOUD_COUNT = 280;
+    const cloudGeo = new THREE.BufferGeometry();
+    const cloudPos = new Float32Array(CLOUD_COUNT * 3);
+    const cloudTargets: THREE.Vector3[] = [];
+    const cloudOrigins: THREE.Vector3[] = [];
+    for (let i = 0; i < CLOUD_COUNT; i++) {
+      // start ON the sphere surface
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 1.8;
+      cloudPos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+      cloudPos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+      cloudPos[i*3+2] = r * Math.cos(phi);
+      cloudOrigins.push(new THREE.Vector3(cloudPos[i*3], cloudPos[i*3+1], cloudPos[i*3+2]));
+      const far = 6 + Math.random() * 5;
+      const tTheta = Math.random() * Math.PI * 2;
+      const tPhi = Math.acos(2 * Math.random() - 1);
+      cloudTargets.push(new THREE.Vector3(far * Math.sin(tPhi) * Math.cos(tTheta), far * Math.sin(tPhi) * Math.sin(tTheta), far * Math.cos(tPhi)));
+    }
+    cloudGeo.setAttribute('position', new THREE.BufferAttribute(cloudPos, 3));
+    const cloudMat = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.03, transparent: true, opacity: 0 });
+    const cloud = new THREE.Points(cloudGeo, cloudMat);
+    scene.add(cloud);
+
+    // ─── RESIZE ───────────────────────────────────────────────────────────
+    const resize = () => {
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Helper math functions
+    const lerpVal = (a: number, b: number, t: number) => a + (b - a) * t;
+    const clampVal = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+    const easeOutVal = (t: number) => 1 - Math.pow(1-t, 3);
+
+    let lerpedProgress = 0;
+    let lastFlash = -1;
+
+    const heroContent = heroContentRef.current;
+    const decomposeLabel = decomposeLabelRef.current;
+    const reassembleFlash = reassembleFlashRef.current;
+
+    const updateParticles = (progress: number) => {
+      const explode = easeOutVal(clampVal(progress * 2, 0, 1)); // first half = explode
+      const reform  = progress > 0.5 ? easeOutVal(clampVal((progress - 0.5) * 2, 0, 1)) : 0; // second half = reform
+
+      // face particles
+      const pPos = particleGeo.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const ox = pOrigins[i].x, oy = pOrigins[i].y, oz = pOrigins[i].z;
+        const tx = pTargets[i].x, ty = pTargets[i].y, tz = pTargets[i].z;
+        if (reform > 0) {
+          // reform: lerp from target back to origin
+          pPos.setXYZ(i, lerpVal(tx, ox, reform), lerpVal(ty, oy, reform), lerpVal(tz, oz, reform));
+        } else {
+          pPos.setXYZ(i, lerpVal(ox, tx, explode), lerpVal(oy, ty, explode), lerpVal(oz, tz, explode));
+        }
+      }
+      pPos.needsUpdate = true;
+
+      // cloud
+      const cPos = cloudGeo.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < CLOUD_COUNT; i++) {
+        const ox = cloudOrigins[i].x, oy = cloudOrigins[i].y, oz = cloudOrigins[i].z;
+        const tx = cloudTargets[i].x, ty = cloudTargets[i].y, tz = cloudTargets[i].z;
+        if (reform > 0) {
+          cPos.setXYZ(i, lerpVal(tx, ox, reform), lerpVal(ty, oy, reform), lerpVal(tz, oz, reform));
+        } else {
+          cPos.setXYZ(i, lerpVal(ox, tx, explode), lerpVal(oy, ty, explode), lerpVal(oz, tz, explode));
+        }
+      }
+      cPos.needsUpdate = true;
+
+      // wireframe + solid opacity fade
+      const wireOpacity = 1 - clampVal(explode * 2.5, 0, 1);
+      wireMat.opacity = wireOpacity * 0.55;
+      solidMat.opacity = wireOpacity * 0.6;
+
+      // particle opacity
+      const pOpacity = clampVal(explode * 2, 0, 1) * (1 - reform * 0.7);
+      particleMat.opacity = pOpacity;
+      cloudMat.opacity = pOpacity * 0.6;
+
+      // hero text fade out
+      if (heroContent) {
+        const textFade = 1 - clampVal(progress * 5, 0, 1);
+        heroContent.style.opacity = textFade.toString();
+        heroContent.style.transform = `translateY(${(1 - textFade) * 20}px)`;
+      }
+
+      // decompose label
+      if (decomposeLabel) {
+        const labelShow = clampVal((progress - 0.15) * 6, 0, 1) * (1 - clampVal((progress - 0.7) * 6, 0, 1));
+        decomposeLabel.style.opacity = labelShow.toString();
+      }
+
+      // reform flash
+      if (reassembleFlash && reform > 0.05 && reform < 0.3 && Math.floor(progress * 100) !== lastFlash) {
+        lastFlash = Math.floor(progress * 100);
+        reassembleFlash.style.opacity = '0.4';
+        setTimeout(() => {
+          if (reassembleFlash) reassembleFlash.style.opacity = '0';
+        }, 200);
+      }
+    };
+
+    // ─── ANIMATION LOOP ──────────────────────────────────────────────────
+    const clock = new THREE.Clock();
+    let threeAnimFrameId: number;
+
+    const animate = () => {
+      threeAnimFrameId = requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+
+      // smooth lerp toward scroll target
+      lerpedProgress += (scrollProgress - lerpedProgress) * 0.06;
+
+      updateParticles(lerpedProgress);
+
+      // gentle rotation — slows during decompose
+      const rotSpeed = 1 - lerpedProgress * 0.6;
+      wireframe.rotation.y = elapsed * 0.18 * rotSpeed;
+      wireframe.rotation.x = elapsed * 0.08 * rotSpeed;
+      solid.rotation.y = wireframe.rotation.y;
+      solid.rotation.x = wireframe.rotation.x;
+      particles.rotation.y = elapsed * 0.04;
+      cloud.rotation.y = -elapsed * 0.03;
+
+      // subtle camera drift
+      camera.position.x = Math.sin(elapsed * 0.3) * 0.15;
+      camera.position.y = Math.cos(elapsed * 0.2) * 0.1;
+
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // ─── SCROLL REVEAL ───────────────────────────────────────────────────
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(el => revealObs.observe(el));
+
+    // ─── CLEANUP ─────────────────────────────────────────────────────────
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(ringAnimFrameId);
+      cancelAnimationFrame(threeAnimFrameId);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', resize);
+      revealObs.disconnect();
+
+      hoverElements.forEach(el => {
+        el.removeEventListener('mouseenter', onMouseEnter);
+        el.removeEventListener('mouseleave', onMouseLeave);
+      });
+
+      // Dispose Three.js objects
+      icoGeo.dispose();
+      edges.dispose();
+      wireMat.dispose();
+      solidMat.dispose();
+      baseFaceGeo.dispose();
+      particleGeo.dispose();
+      particleMat.dispose();
+      cloudGeo.dispose();
+      cloudMat.dispose();
+      renderer.dispose();
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <div className="cursor" id="cursor" ref={cursorRef}></div>
+      <div className="cursor-ring" id="cursorRing" ref={ringRef}></div>
+      <div className="progress-bar" id="progressBar" ref={progressBarRef}></div>
+
+      {/* NAV */}
+      <nav id="navbar" ref={navbarRef}>
+        <a href="#" className="nav-logo">Mirai <span>Labs</span></a>
+        <ul className="nav-links">
+          <li><a href="#">Work</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+        <a href="#" className="nav-cta">Start a Project</a>
+      </nav>
+
+      {/* HERO — scroll container */}
+      <div className="hero-scroll-container" id="heroScrollContainer" ref={heroContainerRef}>
+        <div className="hero-sticky" id="heroSticky">
+          <canvas id="three-canvas" ref={canvasRef}></canvas>
+          <div className="hero-grid"></div>
+          <div className="reassemble-flash" id="reassembleFlash" ref={reassembleFlashRef}></div>
+
+          {/* decompose state label */}
+          <div className="decompose-label" id="decomposeLabel" ref={decomposeLabelRef}>
+            <h2>Systems in motion.</h2>
+          </div>
+
+          {/* hero text (visible at top, fades at scroll) */}
+          <div className="hero-content" id="heroContent" ref={heroContentRef}>
+            <div className="hero-left">
+              <div className="hero-eyebrow">Colombo, Sri Lanka — Est. 2024</div>
+              <h1 className="hero-title">
+                Engineering<br />
+                <em>digital</em><br />
+                products.
+              </h1>
+            </div>
+            <div className="hero-right">
+              <p className="hero-sub">We build systems that last — web platforms, mobile applications, AI infrastructure, and enterprise software for ambitious businesses.</p>
+              <div className="hero-actions">
+                <a href="#" className="btn-primary">Start a Project</a>
+                <a href="#" className="btn-ghost">View Our Work</a>
+              </div>
+            </div>
+          </div>
+
+          <div className="scroll-hint">
+            <div className="scroll-line"></div>
+            <span>Scroll</span>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+
+      {/* BELOW HERO */}
+      <div className="below-hero">
+        <section className="statement">
+          <div className="reveal">
+            <h2>We don&apos;t chase<br />trends. We build<br /><em>systems that last.</em></h2>
+          </div>
+          <div className="reveal">
+            <p>Every engagement starts with deep understanding — of your users, your market, your ambitions. Then we engineer with precision and care for the long term.</p>
+          </div>
+        </section>
+
+        <section className="services">
+          <div className="section-label reveal">Our Capabilities</div>
+          <div className="service-item reveal"><span className="service-num">01</span><span className="service-name">Custom Software Development</span><span className="service-arrow">→</span></div>
+          <div className="service-item reveal"><span className="service-num">02</span><span className="service-name">Web Platforms & Applications</span><span className="service-arrow">→</span></div>
+          <div className="service-item reveal"><span className="service-num">03</span><span className="service-name">Mobile Development</span><span className="service-arrow">→</span></div>
+          <div className="service-item reveal"><span className="service-num">04</span><span className="service-name">Artificial Intelligence & Automation</span><span className="service-arrow">→</span></div>
+          <div className="service-item reveal"><span className="service-num">05</span><span className="service-name">Cloud Infrastructure & DevOps</span><span className="service-arrow">→</span></div>
+        </section>
+
+        <footer>
+          <div className="logo">Mirai <span>Labs</span></div>
+          <p>© 2026 Mirai Labs · Built with precision.</p>
+        </footer>
+      </div>
+    </>
   );
 }
