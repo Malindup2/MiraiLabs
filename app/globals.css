@@ -511,19 +511,7 @@ nav.scrolled {
 }
 
 footer {
-  padding: 60px 40px;
-  max-width: 1440px;
-  margin: 0 auto;
-  border-top: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-@media (max-width: 768px) {
-  footer {
-    padding: 60px 20px;
-  }
+  width: 100%;
 }
 
 footer .logo {
@@ -610,8 +598,8 @@ button {
   position: relative;
   width: 100%;
   padding: 24px 0;
-  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
 }
 
 .marquee-row {
@@ -648,12 +636,12 @@ button {
   width: 60px;
   height: 60px;
   flex-shrink: 0;
-  opacity: 0.4;
+  opacity: 0.75;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .marquee-item:hover {
-  opacity: 0.9;
+  opacity: 1.0;
   transform: scale(1.15);
 }
 

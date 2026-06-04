@@ -37,6 +37,7 @@ export default function Home() {
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeCountry, setActiveCountry] = useState<string | null>(null);
 
   useEffect(() => {
     // ─── CURSOR ───────────────────────────────────────────────────────────
@@ -485,8 +486,169 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* WE WORK WITH (GLOBAL FOOTPRINT) */}
+        <section className="py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="flex flex-col gap-6">
+            <div className="section-label">Global Footprint</div>
+            <h2 className="font-serif text-3xl md:text-5xl font-light text-white leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              We work with partners across the globe.
+            </h2>
+            <p className="text-sm text-[#777] leading-relaxed max-w-md">
+              From our main engineering center in Colombo, Sri Lanka, we design and support production systems operating globally. Hover over a location to see our reach.
+            </p>
+            <div className="flex flex-col gap-4 mt-6">
+              <div 
+                className={`p-4 border border-[rgba(255,255,255,0.05)] rounded-xl transition-all duration-300 cursor-none flex items-center justify-between ${activeCountry === 'sri-lanka' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.2)]' : 'bg-transparent'}`}
+                onMouseEnter={() => setActiveCountry('sri-lanka')}
+                onMouseLeave={() => setActiveCountry(null)}
+              >
+                <div className="flex flex-col">
+                  <span className="text-white font-medium text-base">Sri Lanka</span>
+                  <span className="text-xs text-[#555] uppercase tracking-wider mt-1">Colombo — Core R&D & Engineering Hub</span>
+                </div>
+                <span className="text-lg text-[#555]">&rarr;</span>
+              </div>
+              <div 
+                className={`p-4 border border-[rgba(255,255,255,0.05)] rounded-xl transition-all duration-300 cursor-none flex items-center justify-between ${activeCountry === 'uae' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.2)]' : 'bg-transparent'}`}
+                onMouseEnter={() => setActiveCountry('uae')}
+                onMouseLeave={() => setActiveCountry(null)}
+              >
+                <div className="flex flex-col">
+                  <span className="text-white font-medium text-base">United Arab Emirates</span>
+                  <span className="text-xs text-[#555] uppercase tracking-wider mt-1">Dubai — Digital Infrastructure & FinTech</span>
+                </div>
+                <span className="text-lg text-[#555]">&rarr;</span>
+              </div>
+              <div 
+                className={`p-4 border border-[rgba(255,255,255,0.05)] rounded-xl transition-all duration-300 cursor-none flex items-center justify-between ${activeCountry === 'estonia' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.2)]' : 'bg-transparent'}`}
+                onMouseEnter={() => setActiveCountry('estonia')}
+                onMouseLeave={() => setActiveCountry(null)}
+              >
+                <div className="flex flex-col">
+                  <span className="text-white font-medium text-base">Estonia</span>
+                  <span className="text-xs text-[#555] uppercase tracking-wider mt-1">Tallinn — Ledger Systems & Digital Identity</span>
+                </div>
+                <span className="text-lg text-[#555]">&rarr;</span>
+              </div>
+              <div 
+                className={`p-4 border border-[rgba(255,255,255,0.05)] rounded-xl transition-all duration-300 cursor-none flex items-center justify-between ${activeCountry === 'japan' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.2)]' : 'bg-transparent'}`}
+                onMouseEnter={() => setActiveCountry('japan')}
+                onMouseLeave={() => setActiveCountry(null)}
+              >
+                <div className="flex flex-col">
+                  <span className="text-white font-medium text-base">Japan</span>
+                  <span className="text-xs text-[#555] uppercase tracking-wider mt-1">Tokyo — Industrial Automation & Integrations</span>
+                </div>
+                <span className="text-lg text-[#555]">&rarr;</span>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-full h-[400px] bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-2xl overflow-hidden shadow-inner flex items-center justify-center">
+            {/* World Map Background Image */}
+            <img src="/map.png" alt="World Map" className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none" />
+
+            {/* Glowing lines connecting Sri Lanka to UAE, Estonia, Japan */}
+            <svg viewBox="0 0 1000 500" className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+              {/* Sri Lanka (650, 310) to Estonia (480, 160) */}
+              <path 
+                d="M650 310 Q 565 235 480 160" 
+                fill="none" 
+                stroke={activeCountry === 'estonia' ? '#ffffff' : 'rgba(255, 255, 255, 0.2)'} 
+                strokeWidth={activeCountry === 'estonia' ? '2.5' : '1'} 
+                className="transition-all duration-300"
+              />
+              {/* Sri Lanka (650, 310) to UAE (550, 240) */}
+              <path 
+                d="M650 310 Q 600 275 550 240" 
+                fill="none" 
+                stroke={activeCountry === 'uae' ? '#ffffff' : 'rgba(255, 255, 255, 0.2)'} 
+                strokeWidth={activeCountry === 'uae' ? '2.5' : '1'} 
+                className="transition-all duration-300"
+              />
+              {/* Sri Lanka (650, 310) to Japan (820, 190) */}
+              <path 
+                d="M650 310 Q 735 250 820 190" 
+                fill="none" 
+                stroke={activeCountry === 'japan' ? '#ffffff' : 'rgba(255, 255, 255, 0.2)'} 
+                strokeWidth={activeCountry === 'japan' ? '2.5' : '1'} 
+                className="transition-all duration-300"
+              />
+            </svg>
+
+            {/* Markers with Flags & Blinking dots */}
+            {/* 1. Estonia */}
+            <div 
+              className={`absolute transition-all duration-500 flex flex-col items-center gap-2 ${activeCountry === 'estonia' ? 'scale-110 z-10' : 'opacity-70 scale-100 z-0'}`}
+              style={{ left: '48%', top: '32%' }}
+            >
+              <div className="relative group flex flex-col items-center">
+                <img 
+                  src="/flag-for-flag-estonia-svgrepo-com.svg" 
+                  alt="Estonia Flag" 
+                  className={`w-9 h-6 object-cover rounded shadow-lg border transition-all duration-300 ${activeCountry === 'estonia' ? 'border-white' : 'border-[rgba(255,255,255,0.15)]'}`}
+                />
+                <span className="absolute -top-6 text-[10px] tracking-wider uppercase font-medium bg-black px-1.5 py-0.5 rounded border border-[rgba(255,255,255,0.1)] text-white whitespace-nowrap">Estonia</span>
+                <span className="w-2.5 h-2.5 bg-white rounded-full mt-1.5 animate-ping absolute -bottom-1"></span>
+                <span className="w-2.5 h-2.5 bg-white rounded-full mt-1.5 absolute -bottom-1"></span>
+              </div>
+            </div>
+
+            {/* 2. UAE */}
+            <div 
+              className={`absolute transition-all duration-500 flex flex-col items-center gap-2 ${activeCountry === 'uae' ? 'scale-110 z-10' : 'opacity-70 scale-100 z-0'}`}
+              style={{ left: '55%', top: '48%' }}
+            >
+              <div className="relative group flex flex-col items-center">
+                <img 
+                  src="/united-arab-emirates-svgrepo-com.svg" 
+                  alt="UAE Flag" 
+                  className={`w-9 h-6 object-cover rounded shadow-lg border transition-all duration-300 ${activeCountry === 'uae' ? 'border-white' : 'border-[rgba(255,255,255,0.15)]'}`}
+                />
+                <span className="absolute -top-6 text-[10px] tracking-wider uppercase font-medium bg-black px-1.5 py-0.5 rounded border border-[rgba(255,255,255,0.1)] text-white whitespace-nowrap">UAE</span>
+                <span className="w-2.5 h-2.5 bg-white rounded-full mt-1.5 animate-ping absolute -bottom-1"></span>
+                <span className="w-2.5 h-2.5 bg-white rounded-full mt-1.5 absolute -bottom-1"></span>
+              </div>
+            </div>
+
+            {/* 3. Sri Lanka */}
+            <div 
+              className={`absolute transition-all duration-500 flex flex-col items-center gap-2 ${activeCountry === 'sri-lanka' ? 'scale-110 z-10' : 'scale-100 z-0'}`}
+              style={{ left: '65%', top: '62%' }}
+            >
+              <div className="relative group flex flex-col items-center">
+                <img 
+                  src="/flag-for-flag-sri-lanka-svgrepo-com.svg" 
+                  alt="Sri Lanka Flag" 
+                  className={`w-9 h-6 object-cover rounded shadow-lg border transition-all duration-300 ${activeCountry === 'sri-lanka' ? 'border-white' : 'border-[rgba(255,255,255,0.3)]'}`}
+                />
+                <span className="absolute -top-6 text-[10px] tracking-wider uppercase font-medium bg-black px-1.5 py-0.5 rounded border border-white text-white whitespace-nowrap">Sri Lanka (HQ)</span>
+                <span className="w-2.5 h-2.5 bg-white rounded-full mt-1.5 animate-ping absolute -bottom-1"></span>
+                <span className="w-2.5 h-2.5 bg-white rounded-full mt-1.5 absolute -bottom-1"></span>
+              </div>
+            </div>
+
+            {/* 4. Japan */}
+            <div 
+              className={`absolute transition-all duration-500 flex flex-col items-center gap-2 ${activeCountry === 'japan' ? 'scale-110 z-10' : 'opacity-70 scale-100 z-0'}`}
+              style={{ left: '82%', top: '38%' }}
+            >
+              <div className="relative group flex flex-col items-center">
+                <img 
+                  src="/japan-svgrepo-com.svg" 
+                  alt="Japan Flag" 
+                  className={`w-9 h-6 object-cover rounded shadow-lg border transition-all duration-300 ${activeCountry === 'japan' ? 'border-white' : 'border-[rgba(255,255,255,0.15)]'}`}
+                />
+                <span className="absolute -top-6 text-[10px] tracking-wider uppercase font-medium bg-black px-1.5 py-0.5 rounded border border-[rgba(255,255,255,0.1)] text-white whitespace-nowrap">Japan</span>
+                <span className="w-2.5 h-2.5 bg-white rounded-full mt-1.5 animate-ping absolute -bottom-1"></span>
+                <span className="w-2.5 h-2.5 bg-white rounded-full mt-1.5 absolute -bottom-1"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* TESTIMONIALS CAROUSEL */}
-        <section className="reveal py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] flex flex-col">
+        <section className="py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] flex flex-col">
           <div className="section-label">Client Feedback</div>
           <div className="max-w-[800px] mx-auto w-full flex flex-col gap-9 bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-6 md:p-[50px_60px] relative shadow-2xl" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
             <div className="flex flex-col gap-6">
@@ -528,9 +690,139 @@ export default function Home() {
           </div>
         </section>
 
-        <footer>
-          <div className="logo">Mirai <span>Labs</span></div>
-          <p>© 2026 Mirai Labs · Built with precision.</p>
+        {/* STATS SECTION */}
+        <section className="py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] flex flex-col gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex justify-between items-start w-full">
+                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>30+</span>
+                <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
+                  <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                </span>
+              </div>
+              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Industries Served</div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex justify-between items-start w-full">
+                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>92M+</span>
+                <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
+                  <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <polyline points="16 11 18 13 22 9"></polyline>
+                  </svg>
+                </span>
+              </div>
+              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Users Reached</div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex justify-between items-start w-full">
+                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>100+</span>
+                <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
+                  <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </span>
+              </div>
+              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Employees</div>
+            </div>
+          </div>
+        </section>
+
+        {/* PREMIUM FOOTER */}
+        <footer className="w-full border-t border-[rgba(255,255,255,0.05)] bg-[#030303] mt-20 pt-20 pb-10">
+          <div className="w-full px-6 md:px-12 lg:px-20 flex flex-col gap-16">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 animate-fadeUp">
+              {/* Column 1: Info & Socials */}
+              <div className="flex flex-col gap-6">
+                <a href="#" className="nav-logo text-white font-medium text-xl tracking-tight flex items-baseline gap-1" style={{ textDecoration: 'none' }}>
+                  Mirai <span className="font-serif italic text-gray-400 text-2xl" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Labs</span>
+                </a>
+                <p className="text-sm text-[#777] leading-relaxed">
+                  Engineering digital products with absolute precision, modern aesthetics, and long-term sustainability.
+                </p>
+                <div className="flex gap-3 mt-2">
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-[rgba(255,255,255,0.1)] flex items-center justify-center bg-[rgba(255,255,255,0.01)] cursor-none transition-all duration-300 hover:bg-white hover:text-black hover:border-white text-white" aria-label="LinkedIn Profile">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                  </a>
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-[rgba(255,255,255,0.1)] flex items-center justify-center bg-[rgba(255,255,255,0.01)] cursor-none transition-all duration-300 hover:bg-white hover:text-black hover:border-white text-white" aria-label="Twitter X Profile">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </a>
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-[rgba(255,255,255,0.1)] flex items-center justify-center bg-[rgba(255,255,255,0.01)] cursor-none transition-all duration-300 hover:bg-white hover:text-black hover:border-white text-white" aria-label="GitHub Repository">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.579 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              {/* Column 2: Navigation */}
+              <div className="flex flex-col gap-6">
+                <h4 className="text-xs font-semibold uppercase tracking-widest text-[#555]">Navigation</h4>
+                <ul className="flex flex-col gap-3 list-none p-0 m-0">
+                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Work</a></li>
+                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Services</a></li>
+                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">About</a></li>
+                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Contact</a></li>
+                </ul>
+              </div>
+
+              {/* Column 3: Capabilities */}
+              <div className="flex flex-col gap-6">
+                <h4 className="text-xs font-semibold uppercase tracking-widest text-[#555]">Services</h4>
+                <ul className="flex flex-col gap-3 list-none p-0 m-0">
+                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Software Development</a></li>
+                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Web Platforms</a></li>
+                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">Mobile Development</a></li>
+                  <li><a href="#" className="text-sm text-[#777] hover:text-white transition-colors duration-300 cursor-none no-underline">AI & DevOps</a></li>
+                </ul>
+              </div>
+
+              {/* Column 4: Newsletter */}
+              <div className="flex flex-col gap-6">
+                <h4 className="text-xs font-semibold uppercase tracking-widest text-[#555]">Start a Project</h4>
+                <p className="text-sm text-[#777]">
+                  Ready to build something lasting? Subscribe to get engineering updates.
+                </p>
+                <div className="flex relative">
+                  <input 
+                    type="email" 
+                    placeholder="Enter your email" 
+                    className="w-full bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded-xl py-3 pl-4 pr-12 text-sm text-white placeholder-[#555] focus:outline-none focus:border-[rgba(255,255,255,0.2)] transition-colors duration-300 cursor-none"
+                  />
+                  <button className="absolute right-2 top-1.5 bottom-1.5 w-9 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm cursor-none transition-transform duration-300 hover:scale-105">
+                    &rarr;
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom section */}
+            <div className="border-t border-[rgba(255,255,255,0.05)] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+              <span className="text-xs text-[#555]">
+                &copy; {new Date().getFullYear()} Mirai Labs. Built with precision and care.
+              </span>
+              <div className="flex gap-6">
+                <a href="#" className="text-xs text-[#555] hover:text-white transition-colors duration-300 cursor-none no-underline">Privacy Policy</a>
+                <a href="#" className="text-xs text-[#555] hover:text-white transition-colors duration-300 cursor-none no-underline">Terms of Service</a>
+              </div>
+            </div>
+          </div>
         </footer>
       </div>
     </>
