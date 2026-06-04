@@ -369,6 +369,14 @@ export default function Home() {
       {/* HERO — scroll container */}
       <div className="hero-scroll-container" id="heroScrollContainer" ref={heroContainerRef}>
         <div className="hero-sticky" id="heroSticky">
+          <video
+            src="/robot_asset.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover z-0 opacity-35 pointer-events-none"
+          ></video>
           <canvas id="three-canvas" ref={canvasRef}></canvas>
           <div className="hero-grid"></div>
           <div className="reassemble-flash" id="reassembleFlash" ref={reassembleFlashRef}></div>
