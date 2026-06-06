@@ -265,12 +265,12 @@ export default function Home() {
     const edges = new THREE.EdgesGeometry(icoGeo);
 
     // wireframe lines — the "form"
-    const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 });
+    const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 });
     const wireframe = new THREE.LineSegments(edges, wireMat);
     scene.add(wireframe);
 
     // inner solid (subtle)
-    const solidMat = new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.1, side: THREE.FrontSide });
+    const solidMat = new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.02, side: THREE.FrontSide });
     const solid = new THREE.Mesh(icoGeo, solidMat);
     scene.add(solid);
 
@@ -393,8 +393,8 @@ export default function Home() {
 
       // wireframe + solid opacity fade
       const wireOpacity = 1 - clampVal(explode * 2.5, 0, 1);
-      wireMat.opacity = wireOpacity * 0.55;
-      solidMat.opacity = wireOpacity * 0.6;
+      wireMat.opacity = wireOpacity * 0.08;
+      solidMat.opacity = wireOpacity * 0.02;
 
       // particle opacity
       const pOpacity = clampVal(explode * 2, 0, 1) * (1 - reform * 0.7);
