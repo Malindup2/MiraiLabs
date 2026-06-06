@@ -69,7 +69,7 @@ export default function Home() {
     animRing();
 
     // Hover effects
-    const hoverElements = document.querySelectorAll('a, button, .service-item, [class*="col-span"]');
+    const hoverElements = document.querySelectorAll('a, button, .service-item, [class*="col-span"], .group.relative');
     const onMouseEnter = () => {
       if (cursor && ring) {
         cursor.style.width = '14px';
@@ -448,13 +448,153 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="services">
-          <div className="section-label reveal">Our Capabilities</div>
-          <div className="service-item reveal"><span className="service-num">01</span><span className="service-name">Custom Software Development</span><span className="service-arrow">→</span></div>
-          <div className="service-item reveal"><span className="service-num">02</span><span className="service-name">Web Platforms & Applications</span><span className="service-arrow">→</span></div>
-          <div className="service-item reveal"><span className="service-num">03</span><span className="service-name">Mobile Development</span><span className="service-arrow">→</span></div>
-          <div className="service-item reveal"><span className="service-num">04</span><span className="service-name">Artificial Intelligence & Automation</span><span className="service-arrow">→</span></div>
-          <div className="service-item reveal"><span className="service-num">05</span><span className="service-name">Cloud Infrastructure & DevOps</span><span className="service-arrow">→</span></div>
+        <section className="services reveal">
+          <div className="section-label">Our Capabilities</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div className="group relative p-8 md:p-10 bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-h-[300px]" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-white text-opacity-80 group-hover:text-opacity-100 transition-all duration-300">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                    </svg>
+                  </span>
+                  <span className="text-xs uppercase tracking-widest text-[#555] font-semibold group-hover:text-[#777] transition-colors duration-300">01</span>
+                </div>
+                <h3 className="font-serif text-2xl font-light text-white leading-tight mt-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Custom Software Development
+                </h3>
+                <p className="text-xs text-[#777] leading-relaxed">
+                  Robust backend architectures, custom APIs, and stateful databases engineered with Rust, Go, and C++ for mission-critical operations.
+                </p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-[#555] group-hover:text-white mt-8 transition-colors duration-300">
+                <span>Explore Tech Specs</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="group relative p-8 md:p-10 bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-h-[300px]" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-white text-opacity-80 group-hover:text-opacity-100 transition-all duration-300">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253" />
+                    </svg>
+                  </span>
+                  <span className="text-xs uppercase tracking-widest text-[#555] font-semibold group-hover:text-[#777] transition-colors duration-300">02</span>
+                </div>
+                <h3 className="font-serif text-2xl font-light text-white leading-tight mt-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Web Platforms
+                </h3>
+                <p className="text-xs text-[#777] leading-relaxed">
+                  High-performance Next.js systems, real-time dashboards, and WebGL modules matching speed with flawless visual excellence.
+                </p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-[#555] group-hover:text-white mt-8 transition-colors duration-300">
+                <span>Explore Platforms</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="group relative p-8 md:p-10 bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-h-[300px]" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-white text-opacity-80 group-hover:text-opacity-100 transition-all duration-300">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                    </svg>
+                  </span>
+                  <span className="text-xs uppercase tracking-widest text-[#555] font-semibold group-hover:text-[#777] transition-colors duration-300">03</span>
+                </div>
+                <h3 className="font-serif text-2xl font-light text-white leading-tight mt-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Mobile Development
+                </h3>
+                <p className="text-xs text-[#777] leading-relaxed">
+                  Native and cross-platform mobile apps for iOS and Android built for offline-first reliability and fluid UX.
+                </p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-[#555] group-hover:text-white mt-8 transition-colors duration-300">
+                <span>Explore Native Specs</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+              </div>
+            </div>
+
+            {/* Card 4 */}
+            <div className="group relative p-8 md:p-10 bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-h-[300px]" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-white text-opacity-80 group-hover:text-opacity-100 transition-all duration-300">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 21m0 0-.766-4.65m.766 4.65h7.125m-12.75 0h.008v.008H3.375V21Zm1.2-4.975L12 3.75l7.425 12.275a2.25 2.25 0 0 1-1.925 3.413H6.5a2.25 2.25 0 0 1-1.925-3.413Z" />
+                    </svg>
+                  </span>
+                  <span className="text-xs uppercase tracking-widest text-[#555] font-semibold group-hover:text-[#777] transition-colors duration-300">04</span>
+                </div>
+                <h3 className="font-serif text-2xl font-light text-white leading-tight mt-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Artificial Intelligence
+                </h3>
+                <p className="text-xs text-[#777] leading-relaxed">
+                  Intelligent data pipelines, custom LLM fine-tuning, and reinforcement agents designed to automate complex corporate workflows.
+                </p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-[#555] group-hover:text-white mt-8 transition-colors duration-300">
+                <span>Explore Models</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+              </div>
+            </div>
+
+            {/* Card 5 */}
+            <div className="group relative p-8 md:p-10 bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-h-[300px]" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-white text-opacity-80 group-hover:text-opacity-100 transition-all duration-300">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21m-1.414-7.071-.707.707m-11.314 11.314-.707.707m12.728 0-.707-.707M6.343 6.343l-.707-.707m12.728 12.728L12 12m0 0L6.343 6.343M12 12l5.657 5.657M12 12l-5.657 5.657M12 12l5.657-5.657" />
+                    </svg>
+                  </span>
+                  <span className="text-xs uppercase tracking-widest text-[#555] font-semibold group-hover:text-[#777] transition-colors duration-300">05</span>
+                </div>
+                <h3 className="font-serif text-2xl font-light text-white leading-tight mt-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Infrastructure & DevOps
+                </h3>
+                <p className="text-xs text-[#777] leading-relaxed">
+                  Kubernetes orchestration, zero-downtime pipelines, zero-trust configurations, and secure cloud pipelines.
+                </p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-[#555] group-hover:text-white mt-8 transition-colors duration-300">
+                <span>Explore Architectures</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+              </div>
+            </div>
+
+            {/* Card 6 */}
+            <div className="group relative p-8 md:p-10 bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-h-[300px]" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-white text-opacity-80 group-hover:text-opacity-100 transition-all duration-300">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                    </svg>
+                  </span>
+                  <span className="text-xs uppercase tracking-widest text-[#555] font-semibold group-hover:text-[#777] transition-colors duration-300">06</span>
+                </div>
+                <h3 className="font-serif text-2xl font-light text-white leading-tight mt-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Product Strategy
+                </h3>
+                <p className="text-xs text-[#777] leading-relaxed">
+                  Collaborative workshops, interactive wireframes, detailed platform scope blueprints, and bespoke corporate identity libraries.
+                </p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-[#555] group-hover:text-white mt-8 transition-colors duration-300">
+                <span>Explore Strategies</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* TECH STACK MARQUEE */}
@@ -497,51 +637,44 @@ export default function Home() {
             <p className="text-sm text-[#777] leading-relaxed max-w-md">
               From our main engineering center in Colombo, Sri Lanka, we design and support production systems operating globally. Hover over a location to see our reach.
             </p>
-            <div className="flex flex-col gap-4 mt-6">
-              <div 
-                className={`p-4 border border-[rgba(255,255,255,0.05)] rounded-xl transition-all duration-300 cursor-none flex items-center justify-between ${activeCountry === 'sri-lanka' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.2)]' : 'bg-transparent'}`}
+            <div className="flex flex-wrap gap-2.5 mt-6">
+              <button 
+                className={`px-4 py-2.5 rounded-full border text-xs uppercase tracking-wider transition-all duration-300 cursor-none ${activeCountry === 'sri-lanka' ? 'bg-white text-black border-white font-medium' : 'bg-[rgba(255,255,255,0.02)] border-[rgba(255,255,255,0.08)] text-[#777] hover:text-white hover:border-white'}`}
                 onMouseEnter={() => setActiveCountry('sri-lanka')}
                 onMouseLeave={() => setActiveCountry(null)}
               >
-                <div className="flex flex-col">
-                  <span className="text-white font-medium text-base">Sri Lanka</span>
-                  <span className="text-xs text-[#555] uppercase tracking-wider mt-1">Colombo — Core R&D & Engineering Hub</span>
-                </div>
-                <span className="text-lg text-[#555]">&rarr;</span>
-              </div>
-              <div 
-                className={`p-4 border border-[rgba(255,255,255,0.05)] rounded-xl transition-all duration-300 cursor-none flex items-center justify-between ${activeCountry === 'uae' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.2)]' : 'bg-transparent'}`}
+                Sri Lanka
+              </button>
+              <button 
+                className={`px-4 py-2.5 rounded-full border text-xs uppercase tracking-wider transition-all duration-300 cursor-none ${activeCountry === 'uae' ? 'bg-white text-black border-white font-medium' : 'bg-[rgba(255,255,255,0.02)] border-[rgba(255,255,255,0.08)] text-[#777] hover:text-white hover:border-white'}`}
                 onMouseEnter={() => setActiveCountry('uae')}
                 onMouseLeave={() => setActiveCountry(null)}
               >
-                <div className="flex flex-col">
-                  <span className="text-white font-medium text-base">United Arab Emirates</span>
-                  <span className="text-xs text-[#555] uppercase tracking-wider mt-1">Dubai — Digital Infrastructure & FinTech</span>
-                </div>
-                <span className="text-lg text-[#555]">&rarr;</span>
-              </div>
-              <div 
-                className={`p-4 border border-[rgba(255,255,255,0.05)] rounded-xl transition-all duration-300 cursor-none flex items-center justify-between ${activeCountry === 'estonia' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.2)]' : 'bg-transparent'}`}
+                United Arab Emirates
+              </button>
+              <button 
+                className={`px-4 py-2.5 rounded-full border text-xs uppercase tracking-wider transition-all duration-300 cursor-none ${activeCountry === 'estonia' ? 'bg-white text-black border-white font-medium' : 'bg-[rgba(255,255,255,0.02)] border-[rgba(255,255,255,0.08)] text-[#777] hover:text-white hover:border-white'}`}
                 onMouseEnter={() => setActiveCountry('estonia')}
                 onMouseLeave={() => setActiveCountry(null)}
               >
-                <div className="flex flex-col">
-                  <span className="text-white font-medium text-base">Estonia</span>
-                  <span className="text-xs text-[#555] uppercase tracking-wider mt-1">Tallinn — Ledger Systems & Digital Identity</span>
-                </div>
-                <span className="text-lg text-[#555]">&rarr;</span>
-              </div>
-              <div 
-                className={`p-4 border border-[rgba(255,255,255,0.05)] rounded-xl transition-all duration-300 cursor-none flex items-center justify-between ${activeCountry === 'japan' ? 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.2)]' : 'bg-transparent'}`}
+                Estonia
+              </button>
+              <button 
+                className={`px-4 py-2.5 rounded-full border text-xs uppercase tracking-wider transition-all duration-300 cursor-none ${activeCountry === 'japan' ? 'bg-white text-black border-white font-medium' : 'bg-[rgba(255,255,255,0.02)] border-[rgba(255,255,255,0.08)] text-[#777] hover:text-white hover:border-white'}`}
                 onMouseEnter={() => setActiveCountry('japan')}
                 onMouseLeave={() => setActiveCountry(null)}
               >
-                <div className="flex flex-col">
-                  <span className="text-white font-medium text-base">Japan</span>
-                  <span className="text-xs text-[#555] uppercase tracking-wider mt-1">Tokyo — Industrial Automation & Integrations</span>
-                </div>
-                <span className="text-lg text-[#555]">&rarr;</span>
-              </div>
+                Japan
+              </button>
+            </div>
+
+            {/* Dynamic detail label */}
+            <div className="h-12 mt-6 flex items-center">
+              {activeCountry === 'sri-lanka' && <p className="text-xs uppercase tracking-widest text-[#999] animate-fadeIn">Colombo — Core R&D & Engineering Hub</p>}
+              {activeCountry === 'uae' && <p className="text-xs uppercase tracking-widest text-[#999] animate-fadeIn">Dubai — Digital Infrastructure & FinTech Hub</p>}
+              {activeCountry === 'estonia' && <p className="text-xs uppercase tracking-widest text-[#999] animate-fadeIn">Tallinn — Ledger Systems & Digital Identity Lab</p>}
+              {activeCountry === 'japan' && <p className="text-xs uppercase tracking-widest text-[#999] animate-fadeIn">Tokyo — Industrial Automation & Integrations Space</p>}
+              {!activeCountry && <p className="text-xs uppercase tracking-widest text-transparent select-none">&nbsp;</p>}
             </div>
           </div>
           <div className="relative w-full h-[400px] bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-2xl overflow-hidden shadow-inner flex items-center justify-center">
@@ -754,7 +887,7 @@ export default function Home() {
             {/* Card 1 */}
             <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
               <div className="flex justify-between items-start w-full">
-                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>30+</span>
+                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>14+</span>
                 <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
                   <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
                     <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -762,13 +895,13 @@ export default function Home() {
                   </svg>
                 </span>
               </div>
-              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Industries Served</div>
+              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Production Deployments</div>
             </div>
 
             {/* Card 2 */}
             <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
               <div className="flex justify-between items-start w-full">
-                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>92M+</span>
+                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>99.99%</span>
                 <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
                   <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
@@ -777,13 +910,13 @@ export default function Home() {
                   </svg>
                 </span>
               </div>
-              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Users Reached</div>
+              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Production Uptime</div>
             </div>
 
             {/* Card 3 */}
             <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
               <div className="flex justify-between items-start w-full">
-                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>100+</span>
+                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>15+</span>
                 <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
                   <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -793,7 +926,7 @@ export default function Home() {
                   </svg>
                 </span>
               </div>
-              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Employees</div>
+              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Core Engineers</div>
             </div>
           </div>
         </section>
