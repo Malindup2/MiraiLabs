@@ -423,8 +423,11 @@ export default function Home() {
       const bgImg = document.querySelector('.hero-sticky img') as HTMLElement;
       const heroGrid = document.querySelector('.hero-grid') as HTMLElement;
 
-      const slideOutPercent = progress * 140; // slide by up to 140% of their space
-      const hudOpacity = 1 - clampVal(progress * 4, 0, 1); // fade out in first 25% of scroll
+      // corner panels animate out on first half, and back in on second half of scroll
+      const hudActive = progress <= 0.5 ? progress * 2 : (1 - progress) * 2;
+      const easedHudActive = easeOutVal(hudActive);
+      const slideOutPercent = easedHudActive * 140; // slide by up to 140% of their space
+      const hudOpacity = 1 - clampVal(easedHudActive * 1.2, 0, 1);
 
       if (leftColTop) {
         leftColTop.style.transform = `translateX(-${slideOutPercent}%)`;
@@ -443,16 +446,16 @@ export default function Home() {
         rightColBot.style.opacity = hudOpacity.toString();
       }
 
-      // Parallax zoom background image
+      // Parallax zoom background image (symmetric on scroll)
       if (bgImg) {
-        bgImg.style.transform = `scale(${1 + progress * 0.12})`;
-        bgImg.style.opacity = (0.35 * (1 - progress * 0.45)).toString(); // fade out slowly
+        bgImg.style.transform = `scale(${1 + easedHudActive * 0.12})`;
+        bgImg.style.opacity = (0.35 * (1 - easedHudActive * 0.45)).toString(); // fade out slowly
       }
 
-      // Expanding HUD Center Ring
+      // Expanding HUD Center Ring (symmetric on scroll)
       if (centerRing) {
-        centerRing.style.transform = `translate(-50%, -50%) scale(${1 + progress * 0.8})`;
-        centerRing.style.opacity = ((1 - clampVal(progress * 2, 0, 1)) * 0.35).toString();
+        centerRing.style.transform = `translate(-50%, -50%) scale(${1 + easedHudActive * 0.8})`;
+        centerRing.style.opacity = ((1 - easedHudActive) * 0.35).toString();
       }
 
       // Grid lines glow (subtle opacity modulation on scroll, static grid density)
