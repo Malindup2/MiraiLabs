@@ -81,11 +81,27 @@ export default function Home() {
   ];
   const [currentCapIdx, setCurrentCapIdx] = useState(0);
 
+  // HUD Telemetry rolling statements (Meaningful engineering copy)
+  const telemetryStatements = [
+    "ZERO DOWNTIME SYSTEMS",
+    "SECURE CLOUD PIPELINES",
+    "RUST MICROSERVICES CORE",
+    "EDGE MESH RUNTIMES"
+  ];
+  const [currentTelIdx, setCurrentTelIdx] = useState(0);
+
   useEffect(() => {
     const capTimer = setInterval(() => {
       setCurrentCapIdx((prev) => (prev + 1) % capabilities.length);
     }, 2500);
     return () => clearInterval(capTimer);
+  }, []);
+
+  useEffect(() => {
+    const telTimer = setInterval(() => {
+      setCurrentTelIdx((prev) => (prev + 1) % telemetryStatements.length);
+    }, 2800);
+    return () => clearInterval(telTimer);
   }, []);
 
   // System Telemetry Dashboard State
@@ -401,17 +417,70 @@ export default function Home() {
       particleMat.opacity = pOpacity;
       cloudMat.opacity = pOpacity * 0.6;
 
-      // hero text fade out
-      if (heroContent) {
-        const textFade = 1 - clampVal(progress * 5, 0, 1);
-        heroContent.style.opacity = textFade.toString();
-        heroContent.style.transform = `translateY(${(1 - textFade) * 20}px)`;
+      // Select HUD columns and apply smooth slide-out and fade transitions
+      const leftColTop = document.querySelector('.hud-left-top') as HTMLElement;
+      const leftColBot = document.querySelector('.hud-left-bottom') as HTMLElement;
+      const rightColTop = document.querySelector('.hud-right-top') as HTMLElement;
+      const rightColBot = document.querySelector('.hud-right-bottom') as HTMLElement;
+      const centerRing = document.querySelector('.hud-center-ring') as HTMLElement;
+      const bgImg = document.querySelector('.hero-sticky img') as HTMLElement;
+      const scanLine = document.querySelector('.hud-scan-line') as HTMLElement;
+      const heroGrid = document.querySelector('.hero-grid') as HTMLElement;
+
+      const slideOutPercent = progress * 140; // slide by up to 140% of their space
+      const hudOpacity = 1 - clampVal(progress * 4, 0, 1); // fade out in first 25% of scroll
+
+      if (leftColTop) {
+        leftColTop.style.transform = `translateX(-${slideOutPercent}%)`;
+        leftColTop.style.opacity = hudOpacity.toString();
+      }
+      if (leftColBot) {
+        leftColBot.style.transform = `translateX(-${slideOutPercent}%)`;
+        leftColBot.style.opacity = hudOpacity.toString();
+      }
+      if (rightColTop) {
+        rightColTop.style.transform = `translateX(${slideOutPercent}%)`;
+        rightColTop.style.opacity = hudOpacity.toString();
+      }
+      if (rightColBot) {
+        rightColBot.style.transform = `translateX(${slideOutPercent}%)`;
+        rightColBot.style.opacity = hudOpacity.toString();
       }
 
-      // decompose label
+      // Parallax zoom background image
+      if (bgImg) {
+        bgImg.style.transform = `scale(${1 + progress * 0.12})`;
+        bgImg.style.opacity = (0.35 * (1 - progress * 0.45)).toString(); // fade out slowly
+      }
+
+      // Expanding HUD Center Ring
+      if (centerRing) {
+        centerRing.style.transform = `translate(-50%, -50%) scale(${1 + progress * 0.8})`;
+        centerRing.style.opacity = ((1 - clampVal(progress * 2, 0, 1)) * 0.35).toString();
+      }
+
+      // Sweeping scanning line
+      if (scanLine) {
+        scanLine.style.top = (progress * 100) + '%';
+        scanLine.style.opacity = progress > 0.02 && progress < 0.98 ? '0.6' : '0';
+      }
+
+      // Grid lines condensation and glow
+      if (heroGrid) {
+        const gridGlow = 0.025 + Math.sin(progress * Math.PI) * 0.15;
+        const gridDensity = 80 - Math.sin(progress * Math.PI) * 35; // lines condense from 80px to 45px!
+        heroGrid.style.opacity = gridGlow.toString();
+        heroGrid.style.backgroundSize = `${gridDensity}px ${gridDensity}px`;
+      }
+
+      // decompose label (with focus scale down effect)
       if (decomposeLabel) {
         const labelShow = clampVal((progress - 0.15) * 6, 0, 1) * (1 - clampVal((progress - 0.7) * 6, 0, 1));
         decomposeLabel.style.opacity = labelShow.toString();
+        
+        // Reticle focus scale animation
+        const focusScale = 1.3 - labelShow * 0.3; // scale goes from 1.3 down to 1.0 (lock-on feel)
+        decomposeLabel.style.transform = `translate(-50%, -50%) scale(${focusScale})`;
       }
 
       // reform flash
@@ -443,8 +512,13 @@ export default function Home() {
       wireframe.rotation.x = elapsed * 0.08 * rotSpeed;
       solid.rotation.y = wireframe.rotation.y;
       solid.rotation.x = wireframe.rotation.x;
-      particles.rotation.y = elapsed * 0.04;
-      cloud.rotation.y = -elapsed * 0.03;
+
+      // accelerate particle swirl as the mesh decomposes to simulate release of kinetic energy
+      const swirlSpeedY = 0.04 + lerpedProgress * 0.25; // spins 6x faster when decomposed!
+      const swirlSpeedX = lerpedProgress * 0.1;
+      particles.rotation.y = elapsed * swirlSpeedY;
+      particles.rotation.z = elapsed * swirlSpeedX;
+      cloud.rotation.y = -elapsed * (0.03 + lerpedProgress * 0.12);
 
       // subtle camera drift
       camera.position.x = Math.sin(elapsed * 0.3) * 0.15;
@@ -525,9 +599,36 @@ export default function Home() {
           <div className="hero-grid"></div>
           <div className="reassemble-flash" id="reassembleFlash" ref={reassembleFlashRef}></div>
 
-          {/* decompose state label */}
-          <div className="decompose-label" id="decomposeLabel" ref={decomposeLabelRef}>
-            <h2>Systems in motion.</h2>
+          {/* decompose state label - Sci-Fi Reticle target tracking system */}
+          <div className="decompose-label" id="decomposeLabel" ref={decomposeLabelRef} style={{ top: "42%", left: "48%" }}>
+            <div className="hud-reticle" style={{ minWidth: "300px" }}>
+              <div className="reticle-corner tl"></div>
+              <div className="reticle-corner tr"></div>
+              <div className="reticle-corner bl"></div>
+              <div className="reticle-corner br"></div>
+              
+              <div className="flex flex-col gap-2 font-mono text-left select-none">
+                <span className="text-[9px] text-[#00ffff] tracking-[0.25em] uppercase blink font-semibold">Mirai Labs Node // Live Core</span>
+                <div className="h-10 flex items-center overflow-hidden relative mt-1">
+                  <AnimatePresence mode="wait">
+                    <motion.h2
+                      key={currentTelIdx}
+                      initial={{ y: 15, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -15, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                      className="text-lg font-bold text-white tracking-wider uppercase leading-none"
+                    >
+                      {telemetryStatements[currentTelIdx]}
+                    </motion.h2>
+                  </AnimatePresence>
+                </div>
+                <div className="flex justify-between items-center text-[8px] text-gray-500 border-t border-white/5 pt-2 mt-1">
+                  <span>LOC: COLOMBO // ESTONIA</span>
+                  <span>STANDARDS: SOC2 CERT</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Rotating HUD Circular Rings */}
