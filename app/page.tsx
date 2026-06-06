@@ -13,7 +13,6 @@ export default function Home() {
   const heroContainerRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
   const decomposeLabelRef = useRef<HTMLDivElement>(null);
-  const reassembleFlashRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   const testimonials = [
@@ -370,11 +369,9 @@ export default function Home() {
     const easeOutVal = (t: number) => 1 - Math.pow(1-t, 3);
 
     let lerpedProgress = 0;
-    let lastFlash = -1;
 
     const heroContent = heroContentRef.current;
     const decomposeLabel = decomposeLabelRef.current;
-    const reassembleFlash = reassembleFlashRef.current;
 
     const updateParticles = (progress: number) => {
       const explode = easeOutVal(clampVal(progress * 2, 0, 1)); // first half = explode
@@ -424,7 +421,6 @@ export default function Home() {
       const rightColBot = document.querySelector('.hud-right-bottom') as HTMLElement;
       const centerRing = document.querySelector('.hud-center-ring') as HTMLElement;
       const bgImg = document.querySelector('.hero-sticky img') as HTMLElement;
-      const scanLine = document.querySelector('.hud-scan-line') as HTMLElement;
       const heroGrid = document.querySelector('.hero-grid') as HTMLElement;
 
       const slideOutPercent = progress * 140; // slide by up to 140% of their space
@@ -459,18 +455,10 @@ export default function Home() {
         centerRing.style.opacity = ((1 - clampVal(progress * 2, 0, 1)) * 0.35).toString();
       }
 
-      // Sweeping scanning line
-      if (scanLine) {
-        scanLine.style.top = (progress * 100) + '%';
-        scanLine.style.opacity = progress > 0.02 && progress < 0.98 ? '0.6' : '0';
-      }
-
-      // Grid lines condensation and glow
+      // Grid lines glow (subtle opacity modulation on scroll, static grid density)
       if (heroGrid) {
-        const gridGlow = 0.025 + Math.sin(progress * Math.PI) * 0.15;
-        const gridDensity = 80 - Math.sin(progress * Math.PI) * 35; // lines condense from 80px to 45px!
+        const gridGlow = 0.025 + Math.sin(progress * Math.PI) * 0.05;
         heroGrid.style.opacity = gridGlow.toString();
-        heroGrid.style.backgroundSize = `${gridDensity}px ${gridDensity}px`;
       }
 
       // decompose label (with focus scale down effect)
@@ -482,15 +470,6 @@ export default function Home() {
         const focusScale = 1.3 - labelShow * 0.3; // scale goes from 1.3 down to 1.0 (lock-on feel)
         decomposeLabel.style.transform = `translate(-50%, -50%) scale(${focusScale})`;
       }
-
-      // reform flash
-      if (reassembleFlash && reform > 0.05 && reform < 0.3 && Math.floor(progress * 100) !== lastFlash) {
-        lastFlash = Math.floor(progress * 100);
-        reassembleFlash.style.opacity = '0.4';
-        setTimeout(() => {
-          if (reassembleFlash) reassembleFlash.style.opacity = '0';
-        }, 200);
-      }
     };
 
     // ─── ANIMATION LOOP ──────────────────────────────────────────────────
@@ -501,8 +480,8 @@ export default function Home() {
       threeAnimFrameId = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      // smooth lerp toward scroll target
-      lerpedProgress += (scrollProgress - lerpedProgress) * 0.06;
+      // smooth lerp toward scroll target - faster catch up for snappier response
+      lerpedProgress += (scrollProgress - lerpedProgress) * 0.12;
 
       updateParticles(lerpedProgress);
 
@@ -597,7 +576,6 @@ export default function Home() {
           />
           <canvas id="three-canvas" ref={canvasRef}></canvas>
           <div className="hero-grid"></div>
-          <div className="reassemble-flash" id="reassembleFlash" ref={reassembleFlashRef}></div>
 
           {/* decompose state label - Sci-Fi Reticle target tracking system */}
           <div className="decompose-label" id="decomposeLabel" ref={decomposeLabelRef} style={{ top: "42%", left: "48%" }}>
@@ -1320,8 +1298,6 @@ export default function Home() {
 
             {/* Right Column: Console Screen Display (7 cols) */}
             <div className="lg:col-span-7 bg-[rgba(5,5,5,0.4)] border border-[rgba(255,255,255,0.06)] rounded-[32px] p-6 md:p-8 flex flex-col justify-between min-h-[440px] relative overflow-hidden shadow-2xl" style={{ backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
-              {/* Scanline/Grid Subtle Aesthetic Overlay */}
-              <div className="absolute inset-0 pointer-events-none opacity-[0.015] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[size:100%_4px]"></div>
               
               {/* Dashboard Header */}
               <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.05)] pb-4 mb-6">

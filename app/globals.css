@@ -161,7 +161,7 @@ nav.scrolled {
 
 /* HERO WRAPPER — scroll container */
 .hero-scroll-container {
-  height: 200vh;
+  height: 125vh;
   position: relative;
 }
 
@@ -345,19 +345,7 @@ nav.scrolled {
   background: linear-gradient(to bottom, var(--mid), transparent);
 }
 
-/* Scanning laser line */
-.hud-scan-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #00ffff, transparent);
-  box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
-  z-index: 4;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
+
 
 /* Telemetry target reticle tracking box */
 .hud-reticle {
@@ -437,16 +425,7 @@ nav.scrolled {
   transition: width .05s linear;
 }
 
-/* REASSEMBLE FLASH */
-.reassemble-flash {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  background: radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255, 255, 255, .06), transparent);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .4s;
-}
+
 
 /* SECTIONS BELOW */
 .below-hero {
