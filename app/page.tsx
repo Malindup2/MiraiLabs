@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import StackIcon from "tech-stack-icons";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -38,6 +39,127 @@ export default function Home() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeCountry, setActiveCountry] = useState<string | null>(null);
+
+  // HUD Projects Carousel State
+  const projects = [
+    {
+      tag: "System Engine // Core Node",
+      name: "ML-01: RUST LOGISTICS",
+      desc: "High-performance systems, real-time message brokers, and safe memory architectures for global operations.",
+      tech: ["Rust", "Actix", "Kafka", "gRPC"]
+    },
+    {
+      tag: "WebGL Layer // Interactive HUD",
+      name: "ML-02: PIPELINE MONITOR",
+      desc: "Interactive 3D dashboards, real-time network telemetry graphs, and client-side rendering modules.",
+      tech: ["Next.js", "Three.js", "GLSL", "D3.js"]
+    },
+    {
+      tag: "AI Inference // Neural Agent",
+      name: "ML-03: COGNITIVE AGENT",
+      desc: "Fine-tuned language models, structured output parsers, and custom reinforcement learning loops.",
+      tech: ["Python", "PyTorch", "FastAPI", "Ollama"]
+    }
+  ];
+
+  const [currentProjectIdx, setCurrentProjectIdx] = useState(0);
+  const nextProject = () => {
+    setCurrentProjectIdx((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
+  };
+  const prevProject = () => {
+    setCurrentProjectIdx((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
+  };
+
+  // HUD Capabilities Rolling Text State
+  const capabilities = [
+    "Web Platforms",
+    "Mobile Applications",
+    "Cloud Infrastructure",
+    "DevOps Systems",
+    "AI Integration",
+    "Product Strategy"
+  ];
+  const [currentCapIdx, setCurrentCapIdx] = useState(0);
+
+  useEffect(() => {
+    const capTimer = setInterval(() => {
+      setCurrentCapIdx((prev) => (prev + 1) % capabilities.length);
+    }, 2500);
+    return () => clearInterval(capTimer);
+  }, []);
+
+  // System Telemetry Dashboard State
+  const [activeMetric, setActiveMetric] = useState<"deployments" | "uptime" | "engineers">("deployments");
+  const [statsVisible, setStatsVisible] = useState(false);
+  const [countDeployments, setCountDeployments] = useState(0);
+  const [countUptime, setCountUptime] = useState(90.0);
+  const [countEngineers, setCountEngineers] = useState(0);
+  const statsSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      if (entry.isIntersecting) {
+        setStatsVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+
+    const currentRef = statsSectionRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!statsVisible) return;
+
+    // Animate Deployments: 0 to 14
+    let depStart = 0;
+    const depTarget = 14;
+    const depDuration = 1200;
+    const depStepTime = Math.abs(Math.floor(depDuration / depTarget));
+    const depTimer = setInterval(() => {
+      depStart += 1;
+      setCountDeployments(depStart);
+      if (depStart >= depTarget) clearInterval(depTimer);
+    }, depStepTime);
+
+    // Animate Uptime: 90.00 to 99.99
+    let uptimeStart = 90.0;
+    const uptimeTarget = 99.99;
+    const uptimeSteps = 100;
+    const uptimeIncrement = (uptimeTarget - uptimeStart) / uptimeSteps;
+    let currentStep = 0;
+    const uptimeTimer = setInterval(() => {
+      currentStep += 1;
+      uptimeStart += uptimeIncrement;
+      setCountUptime(parseFloat(uptimeStart.toFixed(2)));
+      if (currentStep >= uptimeSteps) {
+        setCountUptime(99.99);
+        clearInterval(uptimeTimer);
+      }
+    }, 12);
+
+    // Animate Engineers: 0 to 15
+    let engStart = 0;
+    const engTarget = 15;
+    const engStepTime = Math.abs(Math.floor(depDuration / engTarget));
+    const engTimer = setInterval(() => {
+      engStart += 1;
+      setCountEngineers(engStart);
+      if (engStart >= engTarget) clearInterval(engTimer);
+    }, engStepTime);
+
+    return () => {
+      clearInterval(depTimer);
+      clearInterval(uptimeTimer);
+      clearInterval(engTimer);
+    };
+  }, [statsVisible]);
 
   useEffect(() => {
     // ─── CURSOR ───────────────────────────────────────────────────────────
@@ -139,22 +261,22 @@ export default function Home() {
     camera.position.set(0, 0, 6);
 
     // ─── GEOMETRY: Icosahedron + wireframe ─────────────────────────────
-    const icoGeo = new THREE.IcosahedronGeometry(1.8, 1);
+    const icoGeo = new THREE.IcosahedronGeometry(1.3, 1);
     const edges = new THREE.EdgesGeometry(icoGeo);
 
     // wireframe lines — the "form"
-    const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 });
+    const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 });
     const wireframe = new THREE.LineSegments(edges, wireMat);
     scene.add(wireframe);
 
     // inner solid (subtle)
-    const solidMat = new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.6, side: THREE.FrontSide });
+    const solidMat = new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.1, side: THREE.FrontSide });
     const solid = new THREE.Mesh(icoGeo, solidMat);
     scene.add(solid);
 
     // ─── PARTICLES: face centers that explode on scroll ────────────────
     const ICO_DETAIL = 1;
-    const baseFaceGeo = new THREE.IcosahedronGeometry(1.8, ICO_DETAIL);
+    const baseFaceGeo = new THREE.IcosahedronGeometry(1.3, ICO_DETAIL);
     const posAttr = baseFaceGeo.getAttribute('position') as THREE.BufferAttribute;
 
     // collect unique face centers
@@ -200,7 +322,7 @@ export default function Home() {
       // start ON the sphere surface
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const r = 1.8;
+      const r = 1.3;
       cloudPos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
       cloudPos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
       cloudPos[i*3+2] = r * Math.cos(phi);
@@ -394,14 +516,11 @@ export default function Home() {
       {/* HERO — scroll container */}
       <div className="hero-scroll-container" id="heroScrollContainer" ref={heroContainerRef}>
         <div className="hero-sticky" id="heroSticky">
-          <video
-            src="/robot_asset.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
+          <img
+            src="/hero.png"
+            alt="Hero Visual Background"
             className="absolute inset-0 w-full h-full object-cover z-0 opacity-35 pointer-events-none"
-          ></video>
+          />
           <canvas id="three-canvas" ref={canvasRef}></canvas>
           <div className="hero-grid"></div>
           <div className="reassemble-flash" id="reassembleFlash" ref={reassembleFlashRef}></div>
@@ -411,22 +530,126 @@ export default function Home() {
             <h2>Systems in motion.</h2>
           </div>
 
-          {/* hero text (visible at top, fades at scroll) */}
-          <div className="hero-content" id="heroContent" ref={heroContentRef}>
-            <div className="hero-left">
-              <div className="hero-eyebrow">Colombo, Sri Lanka — Est. 2024</div>
-              <h1 className="hero-title">
-                Engineering<br />
-                <em>digital</em><br />
-                products.
-              </h1>
+          {/* Rotating HUD Circular Rings */}
+          <div className="hud-center-ring">
+            <div className="hud-ring-outer"></div>
+            <div className="hud-ring-inner"></div>
+            <div className="hud-ring-dots"></div>
+          </div>
+
+          {/* HUD Grid Layout */}
+          <div className="hud-grid" id="heroContent" ref={heroContentRef}>
+            {/* Top-Left: Brand & Sub-headings */}
+            <div className="hud-col hud-left-top">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                  <span className="text-[10px] uppercase tracking-widest text-[#777] font-mono">Colombo Node // Sri Lanka</span>
+                </div>
+                <h1 className="font-serif text-5xl font-light tracking-tight leading-[1.05] chrome-gradient-text" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  MIRAI LABS <br />
+                  <span className="italic font-light text-4xl block mt-1 opacity-90">SYSTEMS //</span>
+                </h1>
+              </motion.div>
             </div>
-            <div className="hero-right">
-              <p className="hero-sub">We build systems that last — web platforms, mobile applications, AI infrastructure, and enterprise software for ambitious businesses.</p>
-              <div className="hero-actions">
-                <a href="#" className="btn-primary">Start a Project</a>
-                <a href="#" className="btn-ghost">View Our Work</a>
-              </div>
+
+            {/* Bottom-Left: Interactive Project Preview Card (Video Removed) */}
+            <div className="hud-col hud-left-bottom">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                className="hud-card project-preview-card"
+              >
+                <div className="project-details">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentProjectIdx}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <span className="project-tag">{projects[currentProjectIdx].tag}</span>
+                      <h3 className="project-name mt-1">{projects[currentProjectIdx].name}</h3>
+                      <p className="project-desc mt-2">{projects[currentProjectIdx].desc}</p>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                <div className="project-nav">
+                  <button onClick={prevProject} className="project-nav-btn">←</button>
+                  <a href="/contact" className="project-view-btn">View Specs</a>
+                  <button onClick={nextProject} className="project-nav-btn">→</button>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Top-Right: Dynamic Services Rolling Display */}
+            <div className="hud-col hud-right-top">
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                className="hud-card"
+                style={{ minHeight: "160px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}
+              >
+                <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.05)] pb-3">
+                  <h4 className="text-[10px] uppercase tracking-widest text-[#777] font-mono font-semibold">Capabilities Node</h4>
+                  <span className="w-2 h-2 rounded-full bg-[#00ffff] animate-pulse" style={{ boxShadow: "0 0 6px #00ffff" }}></span>
+                </div>
+                
+                <div className="h-16 flex items-center overflow-hidden relative my-2">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentCapIdx}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -20, opacity: 0 }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-2xl font-light tracking-wide text-white uppercase font-mono"
+                      style={{ textShadow: "0 0 10px rgba(255,255,255,0.2)" }}
+                    >
+                      {capabilities[currentCapIdx]}
+                     </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                <div className="border-t border-[rgba(255,255,255,0.04)] pt-2 flex justify-between items-center text-[9px] font-mono text-gray-600">
+                  <span>&gt; EXECUTE_SCHEDULER</span>
+                  <span>ACTIVE STATE</span>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Bottom-Right: Interactive Badges & Action Buttons */}
+            <div className="hud-col hud-right-bottom">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+                className="flex flex-col gap-6 items-end w-full"
+              >
+                {/* WE BUILD bold statement */}
+                <div className="text-right w-full mb-2">
+                  <span className="font-bold text-white tracking-widest text-4xl font-mono uppercase block" style={{ textShadow: "0 0 15px rgba(255,255,255,0.18)" }}>
+                    WE BUILD
+                  </span>
+                </div>
+
+                {/* Primary/Secondary Actions */}
+                <div className="flex gap-4">
+                  <a href="/contact" className="btn-ghost" style={{ padding: "10px 24px" }}>Start Project</a>
+                  <a href="#below-hero" className="btn-primary" style={{ padding: "10px 24px" }} onClick={(e) => {
+                    e.preventDefault();
+                    document.querySelector('.below-hero')?.scrollIntoView({ behavior: 'smooth' });
+                  }}>Explore Systems</a>
+                </div>
+              </motion.div>
             </div>
           </div>
 
@@ -881,52 +1104,347 @@ export default function Home() {
           </div>
         </section>
 
-        {/* STATS SECTION */}
-        <section className="py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] flex flex-col gap-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
-              <div className="flex justify-between items-start w-full">
-                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>14+</span>
-                <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
-                  <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                  </svg>
-                </span>
+        {/* STATS SECTION - PREMIUM SYSTEM TELEMETRY DASHBOARD */}
+        <section ref={statsSectionRef} className="py-20 px-5 md:py-[120px] md:px-10 max-w-[1440px] mx-auto border-t border-[rgba(189,189,189,0.15)] flex flex-col gap-12">
+          <div className="flex flex-col gap-4">
+            <div className="section-label">Scale & Reliability</div>
+            <h2 className="font-serif text-3xl md:text-5xl font-light text-white leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Our numbers speak for <em>themselves.</em>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* Left Column: Interactive Stats Selectors (5 cols) */}
+            <div className="lg:col-span-5 flex flex-col gap-5 justify-between">
+              {/* Stat 1: Deployments */}
+              <div
+                onClick={() => setActiveMetric("deployments")}
+                onMouseEnter={() => setActiveMetric("deployments")}
+                className={`cursor-pointer relative overflow-hidden rounded-[24px] p-6 md:p-8 flex flex-col justify-between min-h-[140px] border transition-all duration-500 group ${
+                  activeMetric === "deployments"
+                    ? "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.25)] shadow-[0_0_30px_rgba(255,255,255,0.03)]"
+                    : "bg-[rgba(255,255,255,0.01)] border-[rgba(255,255,255,0.05)] hover:border-[rgba(255,255,255,0.15)]"
+                }`}
+                style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+              >
+                {/* Active Indicator Glow Line */}
+                <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-white transition-transform duration-500 origin-bottom ${
+                  activeMetric === "deployments" ? "scale-y-100" : "scale-y-0"
+                }`}></div>
+                
+                <div className="flex justify-between items-start w-full">
+                  <span className="text-4xl md:text-5xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>
+                    {countDeployments}+
+                  </span>
+                  <span className={`transition-colors duration-300 ${activeMetric === "deployments" ? "text-white" : "text-gray-500"}`}>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 mt-6">
+                  <div className="text-xs uppercase tracking-widest text-[#999] font-medium">Production Deployments</div>
+                  <div className="text-[11px] text-[#555] group-hover:text-[#777] transition-colors duration-300">Enterprise platforms launched globally</div>
+                </div>
               </div>
-              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Production Deployments</div>
+
+              {/* Stat 2: Uptime */}
+              <div
+                onClick={() => setActiveMetric("uptime")}
+                onMouseEnter={() => setActiveMetric("uptime")}
+                className={`cursor-pointer relative overflow-hidden rounded-[24px] p-6 md:p-8 flex flex-col justify-between min-h-[140px] border transition-all duration-500 group ${
+                  activeMetric === "uptime"
+                    ? "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.25)] shadow-[0_0_30px_rgba(255,255,255,0.03)]"
+                    : "bg-[rgba(255,255,255,0.01)] border-[rgba(255,255,255,0.05)] hover:border-[rgba(255,255,255,0.15)]"
+                }`}
+                style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+              >
+                {/* Active Indicator Glow Line */}
+                <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-white transition-transform duration-500 origin-bottom ${
+                  activeMetric === "uptime" ? "scale-y-100" : "scale-y-0"
+                }`}></div>
+
+                <div className="flex justify-between items-start w-full">
+                  <span className="text-4xl md:text-5xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>
+                    {countUptime}%
+                  </span>
+                  <span className={`transition-colors duration-300 ${activeMetric === "uptime" ? "text-white" : "text-gray-500"}`}>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 mt-6">
+                  <div className="text-xs uppercase tracking-widest text-[#999] font-medium">Production Uptime</div>
+                  <div className="text-[11px] text-[#555] group-hover:text-[#777] transition-colors duration-300">Continuous reliability & SLA guarantee</div>
+                </div>
+              </div>
+
+              {/* Stat 3: Engineers */}
+              <div
+                onClick={() => setActiveMetric("engineers")}
+                onMouseEnter={() => setActiveMetric("engineers")}
+                className={`cursor-pointer relative overflow-hidden rounded-[24px] p-6 md:p-8 flex flex-col justify-between min-h-[140px] border transition-all duration-500 group ${
+                  activeMetric === "engineers"
+                    ? "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.25)] shadow-[0_0_30px_rgba(255,255,255,0.03)]"
+                    : "bg-[rgba(255,255,255,0.01)] border-[rgba(255,255,255,0.05)] hover:border-[rgba(255,255,255,0.15)]"
+                }`}
+                style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+              >
+                {/* Active Indicator Glow Line */}
+                <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-white transition-transform duration-500 origin-bottom ${
+                  activeMetric === "engineers" ? "scale-y-100" : "scale-y-0"
+                }`}></div>
+
+                <div className="flex justify-between items-start w-full">
+                  <span className="text-4xl md:text-5xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>
+                    {countEngineers}+
+                  </span>
+                  <span className={`transition-colors duration-300 ${activeMetric === "engineers" ? "text-white" : "text-gray-500"}`}>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 mt-6">
+                  <div className="text-xs uppercase tracking-widest text-[#999] font-medium">Core Engineers</div>
+                  <div className="text-[11px] text-[#555] group-hover:text-[#777] transition-colors duration-300">Dedicated system architects & UI developers</div>
+                </div>
+              </div>
             </div>
 
-            {/* Card 2 */}
-            <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
-              <div className="flex justify-between items-start w-full">
-                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>99.99%</span>
-                <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
-                  <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <polyline points="16 11 18 13 22 9"></polyline>
-                  </svg>
-                </span>
+            {/* Right Column: Console Screen Display (7 cols) */}
+            <div className="lg:col-span-7 bg-[rgba(5,5,5,0.4)] border border-[rgba(255,255,255,0.06)] rounded-[32px] p-6 md:p-8 flex flex-col justify-between min-h-[440px] relative overflow-hidden shadow-2xl" style={{ backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
+              {/* Scanline/Grid Subtle Aesthetic Overlay */}
+              <div className="absolute inset-0 pointer-events-none opacity-[0.015] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[size:100%_4px]"></div>
+              
+              {/* Dashboard Header */}
+              <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.05)] pb-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[rgba(255,255,255,0.2)]"></span>
+                  <span className="text-[10px] tracking-widest font-mono text-[#777] uppercase">Dashboard // Corporate Metrics</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] tracking-wider font-mono text-[#555] uppercase">Verified Audit 2026</span>
+                </div>
               </div>
-              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Production Uptime</div>
-            </div>
 
-            {/* Card 3 */}
-            <div className="relative overflow-hidden bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.05)] rounded-[24px] p-8 md:p-10 flex flex-col justify-between min-h-[220px] transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.03)] group" style={{ backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
-              <div className="flex justify-between items-start w-full">
-                <span className="text-5xl md:text-6xl font-light text-white tracking-tight" style={{ fontFamily: "var(--font-sans)" }}>15+</span>
-                <span className="text-gray-400 group-hover:text-white transition-colors duration-300">
-                  <svg className="w-8 h-8 text-white opacity-85 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                  </svg>
-                </span>
-              </div>
-              <div className="text-sm uppercase tracking-wider text-[#777] mt-8">Core Engineers</div>
+              {/* 1. DEPLOYMENTS VISUALIZER */}
+              {activeMetric === "deployments" && (
+                <div className="flex-1 flex flex-col justify-between animate-fadeIn">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    {/* Sector Distribution Progress Bars */}
+                    <div className="flex flex-col gap-4 font-mono">
+                      <div className="text-[10px] uppercase tracking-wider text-[#666]">Sector Distribution</div>
+                      {[
+                        { title: "Enterprise Fintech Platforms", count: 4, percent: 100 },
+                        { title: "Global Logistics & Operations", count: 4, percent: 100 },
+                        { title: "Real-time SaaS Systems", count: 3, percent: 75 },
+                        { title: "AI Infrastructure Pipelines", count: 3, percent: 75 }
+                      ].map((sector, i) => (
+                        <div key={i} className="flex flex-col gap-1">
+                          <div className="flex justify-between text-[11px] text-white/80">
+                            <span className="truncate pr-2">{sector.title}</span>
+                            <span className="text-white font-medium">{sector.count}</span>
+                          </div>
+                          <div className="h-1 w-full bg-[rgba(255,255,255,0.03)] rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-white transition-all duration-1000 ease-out" 
+                              style={{ width: `${sector.percent}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Deployment Insights Box */}
+                    <div className="bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.04)] rounded-xl p-5 font-mono min-h-[180px] flex flex-col justify-between">
+                      <div className="flex flex-col gap-2">
+                        <div className="text-[10px] uppercase tracking-wider text-[#666]">Scale & Footprint</div>
+                        <h3 className="font-serif text-3xl font-light text-white leading-tight mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          1.4M+ <em>Users</em>
+                        </h3>
+                        <p className="text-[11px] text-[#777] leading-relaxed mt-1">
+                          Total monthly active users scaling smoothly across production applications deployed by our core team.
+                        </p>
+                      </div>
+
+                      <div className="border-t border-[rgba(255,255,255,0.04)] pt-3 mt-3 flex justify-between items-center text-[10px] text-[#555]">
+                        <span>Primary Cloud Hubs</span>
+                        <span className="text-white">AWS / GCP / Cloudflare</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Deploy Stats Details Footer */}
+                  <div className="grid grid-cols-3 gap-4 border-t border-[rgba(255,255,255,0.05)] pt-6 mt-6">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">Geographic nodes</span>
+                      <span className="text-lg text-white font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>4 Continents</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">Client Retainer</span>
+                      <span className="text-lg text-white font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>94% Annual</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">Deploy Cadence</span>
+                      <span className="text-lg text-[#27c93f] font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>CI/CD Continuous</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 2. UPTIME VISUALIZER */}
+              {activeMetric === "uptime" && (
+                <div className="flex-1 flex flex-col justify-between animate-fadeIn">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center flex-1">
+                    {/* SVG SLA Compliance Circular Gauge */}
+                    <div className="flex flex-col items-center justify-center p-4">
+                      <div className="relative w-36 h-36 flex items-center justify-center">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                          {/* Background Circle */}
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="42"
+                            stroke="rgba(255, 255, 255, 0.03)"
+                            strokeWidth="6"
+                            fill="transparent"
+                          />
+                          {/* Progress Circle with glow */}
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="42"
+                            stroke="#ffffff"
+                            strokeWidth="6"
+                            fill="transparent"
+                            strokeDasharray={263.8}
+                            strokeDashoffset={2.6} // Representing 99%
+                            strokeLinecap="round"
+                            className="transition-all duration-1000 ease-out"
+                          />
+                        </svg>
+                        <div className="absolute flex flex-col items-center justify-center font-mono">
+                          <span className="text-[10px] text-[#666] uppercase tracking-widest">SLA</span>
+                          <span className="text-xl text-white font-serif" style={{ fontFamily: "'Cormorant Garamond', serif" }}>99.99%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Reliability highlights */}
+                    <div className="bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.04)] rounded-xl p-5 font-mono min-h-[180px] flex flex-col justify-between">
+                      <div className="flex flex-col gap-2">
+                        <div className="text-[10px] uppercase tracking-wider text-[#666]">Reliability Highlights</div>
+                        <ul className="text-[11px] text-[#777] flex flex-col gap-2.5 mt-2 list-none p-0">
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span>Multi-region automated failovers</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span>Zero-downtime ledger migration protocols</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span>Continuous DDoS protection & isolation</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="border-t border-[rgba(255,255,255,0.04)] pt-3 mt-3 flex justify-between items-center text-[10px] text-[#555]">
+                        <span>Disaster Recovery</span>
+                        <span className="text-white">MTTR &lt; 15 Minutes</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SLA Stats Details Footer */}
+                  <div className="grid grid-cols-3 gap-4 border-t border-[rgba(255,255,255,0.05)] pt-6 mt-6">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">Compliance</span>
+                      <span className="text-lg text-white font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>ISO 27001</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">Infrastructure</span>
+                      <span className="text-lg text-white font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>SOC2 Framework</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">Data Redundancy</span>
+                      <span className="text-lg text-[#27c93f] font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Triple-Node Sync</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 3. CORE ENGINEERS VISUALIZER */}
+              {activeMetric === "engineers" && (
+                <div className="flex-1 flex flex-col justify-between animate-fadeIn">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center flex-1">
+                    {/* Skills Breakdown Meters */}
+                    <div className="flex flex-col gap-4 font-mono">
+                      <div className="text-[10px] uppercase tracking-wider text-[#666]">Engineering Core Capabilities</div>
+                      {[
+                        { title: "Systems & Architecture", val: 95 },
+                        { title: "Creative UI / WebGL / NextJS", val: 92 },
+                        { title: "Consensus & Ledger Nodes", val: 86 },
+                        { title: "AI Infra & Custom LLMs", val: 82 }
+                      ].map((skill, i) => (
+                        <div key={i} className="flex flex-col gap-1.5">
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-white/80">{skill.title}</span>
+                            <span className="text-white font-semibold">{skill.val}%</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.04)] rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-white transition-all duration-1000 ease-out" 
+                              style={{ width: `${skill.val}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Stats details & metadata */}
+                    <div className="bg-[rgba(255,255,255,0.015)] border border-[rgba(255,255,255,0.04)] rounded-xl p-5 font-mono min-h-[180px] flex flex-col justify-between">
+                      <div className="flex flex-col gap-2">
+                        <div className="text-[10px] uppercase tracking-wider text-[#666]">Seniority Concentration</div>
+                        <h3 className="font-serif text-3xl font-light text-white leading-tight mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          100% <em>Senior</em>
+                        </h3>
+                        <p className="text-[11px] text-[#777] leading-relaxed mt-1">
+                          No juniors, no placement interns. Every engineer at Mirai Labs is a senior or principal specialist operating with seasoned experience.
+                        </p>
+                      </div>
+
+                      <div className="border-t border-[rgba(255,255,255,0.04)] pt-3 mt-3 flex justify-between items-center text-[10px]">
+                        <span className="text-[#555]">Global Contributors</span>
+                        <span className="text-white">Colombo / Tallinn / Tokyo</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Team commits summary */}
+                  <div className="grid grid-cols-3 gap-4 border-t border-[rgba(255,255,255,0.05)] pt-6 mt-6">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">Expertise Average</span>
+                      <span className="text-lg text-white font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>8.5 Years</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">GitHub Commits</span>
+                      <span className="text-lg text-white font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>480k+</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-[#555] font-mono">Test Coverage</span>
+                      <span className="text-lg text-[#27c93f] font-serif mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>&gt;94.8%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
